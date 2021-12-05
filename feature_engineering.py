@@ -1,15 +1,4 @@
 import numpy as np
-
-
-#################### convert data to matrix ####################################
-mask_on_no_talk = open("properly_worn.csv")
-mask_under_nose = open("below_nose(1).csv")
-mask_on_no_talk_M = np.loadtxt(mask_on_no_talk, delimiter=",")
-mask_under_nose_M = np.loadtxt(mask_under_nose, delimiter=",")
-# print(mask_on_no_talk_M.shape, mask_under_nose_M.shape)
-# print(type(mask_under_nose_M[0][0]))
-################################################################################
-
 ################ feature engineering ###########################################
 class Features:
     def __init__(self, csvFiles, windowSize):
@@ -23,7 +12,7 @@ class Features:
         for d in dataSetList:
             label = d[0, -1] ## all labels are same for given dataset
             print("d"+str(len(d)))
-            datum = Features.add_additional_feature(d[:, :-1], label, windowSize)
+            datum = Features.gen_features(d[:, :-1], label, windowSize)
             features_by_dataset.append(datum)
             # print(features_by_dataset.shape)
 
@@ -66,7 +55,7 @@ class Features:
         return data
 
     @staticmethod
-    def add_additional_feature(data, label, windowSize):
+    def gen_features(data, label, windowSize):
         """
         add additional features to matrix
         """
@@ -107,7 +96,34 @@ class Features:
             iters+=1 
         features = np.delete(features, 1, 0)
         return features
-
+        
+    @staticmethod
+    def gen_features_test(data):
+        ftr_dim_size = 9*4 # number of features
+        dim = len(data[0])
+            # print("test:{}".format(len(data[i:j, 1])))
+        mu = [np.mean(data[:, k]) for k in range(dim)]
+        std = [np.std(data[:, k]) for k in range(dim)]
+        var = [np.var(data[:, k]) for k in range(dim)]
+        maxi = [max(data[:, k]) for k in range(dim)]
+        mini = [min(data[:, k]) for k in range(dim)]
+        min_max_diff = [maxi[k] - mini[k] for k in range(dim)]
+        median = [np.median(data[:, k]) for k in range(dim)]
+        count_above_mean = [np.count_nonzero(data[:,k] > mu[k]) for k in range(dim)]
+        count_below_mean = [np.count_nonzero(data[:,k] < mu[k]) for k in range(dim)]
+        values = np.array([
+            mu,
+            std,
+            var,
+            maxi,
+            mini,
+            min_max_diff,
+            median,
+            count_above_mean,
+            count_below_mean
+            ])
+        return values.reshape(1, ftr_dim_size)
+        
     def print_statistics(self):
         print(
             "Size of training set : {}, size of testing set: {}".format(

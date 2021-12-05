@@ -2,7 +2,7 @@ import serial
 import time
 
 ########################## initialization steps ################################
-ports = ["/dev/cu.usbserial-0246A723","/dev/cu.mask_on-ESP32SPP" ]
+ports = ["/dev/cu.usbserial-0246A723", "/dev/cu.maskon-ESP32SPP"]
 arduino_port = ports[1]  # serial port of Arduino
 
 baud = 115200

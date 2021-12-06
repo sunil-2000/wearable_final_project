@@ -13,7 +13,7 @@ model_obj = Model(csv_list=csv_list, windowSize=window_size)
 
 model_obj.create_knn_model(n_neighbors=3)
 knn = model_obj.k_fold_validation(model_obj.knn)
-model_obj.create_svm_model()
-svm = model_obj.train_svm()
+svm = model_obj.create_svm_model()
+
 joblib.dump(knn, 'my_model.pkl1', compress=9)
 # model_obj.knn_k_plot()

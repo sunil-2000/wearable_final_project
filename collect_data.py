@@ -18,7 +18,7 @@ print("Connected to Arduino port:" + arduino_port)
 file = open(file_name, "a")
 print("Created file")
 ################################################################################
-samples, line = 5000, 0
+samples, line = 10000, 0
 file = open(file_name, "a")
 while line <= samples:
     getData = str(ser.readline())

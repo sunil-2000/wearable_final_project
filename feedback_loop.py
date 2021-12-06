@@ -13,7 +13,7 @@ cur_time = time.localtime()
 ser = serial.Serial(arduino_port, baud)
 
 # import model
-trained_classifier = joblib.load('my_model.pkl')
+trained_classifier = joblib.load('my_model.pkl1')
 
 data = []
 rt = 0
@@ -33,7 +33,7 @@ while True:
             datum[i] = float(d)
 
     data.append(datum)
-    if(len(data) == 100):
+    if(len(data) == 50):
         # create feature test point
         data_matrix = np.array(data)
         window_data = Features.gen_features_test(data_matrix)
@@ -48,7 +48,7 @@ while True:
             ser.write(byte_pred)
         else:
             print("proper wear, pred = {}".format(pred))
-        rt = 50
-        data = data[50:]
+        rt = 25
+        data = data[25:]
         predictions.append(pred)
     rt += 1

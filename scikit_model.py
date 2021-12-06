@@ -20,10 +20,36 @@ class Model:
         self.knn, self.svm = None, None
 
     def create_knn_model(self, n_neighbors):
-        self.knn = KNeighborsClassifier(n_neighbors=n_neighbors, p=2)
+        model = KNeighborsClassifier(n_neighbors=n_neighbors, p=2)
+        xTr, xTe, yTr, yTe = train_test_split(
+            self.X, self.Y, random_state=42, stratify=self.Y)
+        model_out = model.fit(xTr, yTr)
+        train_preds = model.predict(xTr)
+        test_preds = model.predict(xTe)
+
+        print("Total labels in train:{}, +1 labels:{}, -1 label:{}".format(len(yTr),
+              np.count_nonzero(yTr[yTr > 0]), np.count_nonzero(yTr[yTr < 0])))
+        print("Total labels in test:{}, +1 labels:{}, -1 label:{}".format(len(yTe),
+              np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
+        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "knn", True)
+        self.knn = model_out
+        return model_out
 
     def create_svm_model(self):
-        self.svm = svm.SVC(kernel="rbf")
+        model_out = svm.SVC(kernel="rbf")
+        xTr, xTe, yTr, yTe = train_test_split(
+            self.X, self.Y, random_state=42, stratify=self.Y)
+        model_out = model.fit(xTr, yTr)
+        train_preds = model.predict(xTr)
+        test_preds = model.predict(xTe)
+
+        print("Total labels in train:{}, +1 labels:{}, -1 label:{}".format(len(yTr),
+              np.count_nonzero(yTr[yTr > 0]), np.count_nonzero(yTr[yTr < 0])))
+        print("Total labels in test:{}, +1 labels:{}, -1 label:{}".format(len(yTe),
+              np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
+        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "knn", True)
+        self.svm = model_out
+        self.knn = model_out
 
     def train_svm(self):
         model = self.svm

@@ -1,3 +1,4 @@
+from typing import overload
 import serial
 import time
 import joblib
@@ -19,7 +20,8 @@ data = []
 rt = 0
 dim = 4
 predictions = []
-
+window_size = 50
+overlap = 0.5
 while True:
     line = str(ser.readline())
     datum = line[0:][2:-4]
@@ -33,7 +35,7 @@ while True:
             datum[i] = float(d)
 
     data.append(datum)
-    if(len(data) == 50):
+    if(len(data) == window_size):
         # create feature test point
         data_matrix = np.array(data)
         window_data = Features.gen_features_test(data_matrix)
@@ -48,7 +50,7 @@ while True:
             ser.write(byte_pred)
         else:
             print("proper wear, pred = {}".format(pred))
-        rt = 25
-        data = data[25:]
+        rt = window_size * overlap 
+        data = data[rt:]
         predictions.append(pred)
     rt += 1

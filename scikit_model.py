@@ -36,7 +36,7 @@ class Model:
         return model_out
 
     def create_svm_model(self):
-        model_out = svm.SVC(kernel="rbf")
+        model = svm.SVC(kernel="rbf")
         xTr, xTe, yTr, yTe = train_test_split(
             self.X, self.Y, random_state=42, stratify=self.Y)
         model_out = model.fit(xTr, yTr)
@@ -47,7 +47,7 @@ class Model:
               np.count_nonzero(yTr[yTr > 0]), np.count_nonzero(yTr[yTr < 0])))
         print("Total labels in test:{}, +1 labels:{}, -1 label:{}".format(len(yTe),
               np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
-        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "knn", True)
+        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "svm", True)
         self.svm = model_out
         self.knn = model_out
 

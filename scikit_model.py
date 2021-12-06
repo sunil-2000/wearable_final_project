@@ -51,21 +51,6 @@ class Model:
         self.svm = model_out
         self.knn = model_out
 
-    def train_svm(self):
-        model = self.svm
-        xTr, xTe, yTr, yTe = train_test_split(
-            self.X, self.Y, random_state=42, stratify=self.Y)
-        model_out = model.fit(xTr, yTr)
-        train_preds = model.predict(xTr)
-        test_preds = model.predict(xTe)
-        self.svm = model
-        print("Total labels in train:{}, +1 labels:{}, -1 label:{}".format(len(yTr),
-                                                                           np.count_nonzero(yTr[yTr > 0]), np.count_nonzero(yTr[yTr < 0])))
-        print("Total labels in test:{}, +1 labels:{}, -1 label:{}".format(len(yTe),
-              np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
-        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "svm", True)
-        return svm
-
     def k_fold_validation(self, model):
         kf = StratifiedKFold(shuffle=True)
         kfold_validated = model

@@ -1,7 +1,9 @@
 import numpy as np
+from scipy.signal import find_peaks
+from scipy import stats
 ################ feature engineering ###########################################
 
-
+ftr_dim_size = 12*4
 class Features:
     def __init__(self, csvFiles, windowSize):
         dataSetList = []
@@ -11,7 +13,7 @@ class Features:
             dataSetList.append(np.loadtxt(
                 opened_csv, delimiter=","))
 
-        dataSetList = map(lambda d: Features.set_labels(d), dataSetList)
+        # dataSetList = map(lambda d: Features.set_labels(d), dataSetList)
         features_by_dataset = []
         for d in dataSetList:
             label = d[0, -1]  # all labels are same for given dataset
@@ -65,8 +67,7 @@ class Features:
         """
         i, j = 0, windowSize
 
-        ftr_dim_size = 9*4
-        features = np.zeros(37).reshape((1, ftr_dim_size + 1))
+        features = np.zeros(ftr_dim_size+1).reshape((1, ftr_dim_size + 1))
         iters = 0
         while j + windowSize < len(data):
             dim = len(data[0])
@@ -82,6 +83,11 @@ class Features:
                 data[i:j, k] > mu[k]) for k in range(dim)]
             count_below_mean = [np.count_nonzero(
                 data[i:j, k] < mu[k]) for k in range(dim)]
+            interquartile_range = [np.percentile(data[i:j, k],75) - np.percentile(data[i:j, k],25) for k in range(dim)]
+            peak_count = [len(find_peaks(data[i:j, k])) for k in range(dim)]
+            skew = [stats.skew(data[i:j, k]) for k in range(dim)]
+
+           
             # append data
             values = np.array([
                 mu,
@@ -92,7 +98,10 @@ class Features:
                 min_max_diff,
                 median,
                 count_above_mean,
-                count_below_mean
+                count_below_mean,
+                interquartile_range,
+                peak_count,
+                skew
             ])
             flattened_values = np.append(values.flatten().reshape(
                 (1, ftr_dim_size)), label).reshape((1, ftr_dim_size+1))
@@ -106,7 +115,6 @@ class Features:
 
     @ staticmethod
     def gen_features_test(data):
-        ftr_dim_size = 9*4  # number of features
         dim = len(data[0])
         # print("test:{}".format(len(data[i:j, 1])))
         mu = [np.mean(data[:, k]) for k in range(dim)]
@@ -120,6 +128,13 @@ class Features:
             data[:, k] > mu[k]) for k in range(dim)]
         count_below_mean = [np.count_nonzero(
             data[:, k] < mu[k]) for k in range(dim)]
+        
+
+        interquartile_range = [np.percentile(data[:, k],75) - np.percentile(data[:, k],25) for k in range(dim)]
+        peak_count = [len(find_peaks(data[:, k])) for k in range(dim)]
+        skew = [stats.skew(data[:, k]) for k in range(dim)]
+
+
         values = np.array([
             mu,
             std,
@@ -129,7 +144,10 @@ class Features:
             min_max_diff,
             median,
             count_above_mean,
-            count_below_mean
+            count_below_mean,
+            interquartile_range,
+            peak_count,
+            skew
         ])
         return values.reshape(1, ftr_dim_size)
 

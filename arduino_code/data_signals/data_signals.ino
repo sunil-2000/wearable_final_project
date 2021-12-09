@@ -10,7 +10,7 @@ BluetoothSerial SerialBT;
 void setup() 
 { 
 Serial.begin(115200);
-SerialBT.begin("mask_on");
+SerialBT.begin("maskon");
 pinMode(21, OUTPUT);
 
 } 

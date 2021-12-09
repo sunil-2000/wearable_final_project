@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from feature_engineering import Features
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
 
 ################################################################################
 
@@ -17,7 +19,7 @@ class Model:
         self.features = Features(csv_list, windowSize)
         self.X = self.features.X
         self.Y = self.features.Y
-        self.knn, self.svm = None, None
+        self.knn, self.svm, self.nb, self.rf = None, None, None, None
 
     def create_knn_model(self, n_neighbors):
         model = KNeighborsClassifier(n_neighbors=n_neighbors, p=2)
@@ -49,9 +51,38 @@ class Model:
               np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
         Model.model_accuracy(yTr, train_preds, yTe, test_preds, "svm", True)
         self.svm = model_out
-        self.knn = model_out
+        return model_out
+    
+    def create_nb(self):
+        model = GaussianNB()
+        xTr, xTe, yTr, yTe = train_test_split(self.X, self.Y, random_state=42, stratify=self.Y)
+        model_out = model.fit(xTr, yTr)
+        train_preds = model.predict(xTr)
+        test_preds = model.predict(xTe)
+        print("Total labels in train:{}, +1 labels:{}, -1 label:{}".format(len(yTr),
+              np.count_nonzero(yTr[yTr > 0]), np.count_nonzero(yTr[yTr < 0])))
+        print("Total labels in test:{}, +1 labels:{}, -1 label:{}".format(len(yTe),
+              np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
+        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "naive bayes", True)
+        self.nb = model_out
+        return model_out 
+    
+    def create_rf(self):
+        model = RandomForestClassifier(random_state=42)
+        xTr, xTe, yTr, yTe = train_test_split(self.X, self.Y, random_state=42, stratify=self.Y)
+        model_out = model.fit(xTr, yTr)
+        train_preds = model.predict(xTr)
+        test_preds = model.predict(xTe)
+        print("Total labels in train:{}, +1 labels:{}, -1 label:{}".format(len(yTr),
+              np.count_nonzero(yTr[yTr > 0]), np.count_nonzero(yTr[yTr < 0])))
+        print("Total labels in test:{}, +1 labels:{}, -1 label:{}".format(len(yTe),
+              np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
+        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "random forest", True)
+        self.rf = model_out
+        return model_out 
 
-    def k_fold_validation(self, model):
+
+    def k_fold_validation(self, model, model_name):
         kf = StratifiedKFold(shuffle=True)
         kfold_validated = model
         scores = cross_val_score(
@@ -60,18 +91,6 @@ class Model:
             list(map(lambda x: round(x*100, 2), scores))))
         print("\nmean accuracy: {}%".format(round(np.mean(scores * 100), 2)))
         # stratify parameter ===> each set sample from same distribution
-        xTr, xTe, yTr, yTe = train_test_split(
-            self.X, self.Y, random_state=42, stratify=self.Y)
-        model_out = model.fit(xTr, yTr)
-        train_preds = model.predict(xTr)
-        test_preds = model.predict(xTe)
-
-        print("Total labels in train:{}, +1 labels:{}, -1 label:{}".format(len(yTr),
-              np.count_nonzero(yTr[yTr > 0]), np.count_nonzero(yTr[yTr < 0])))
-        print("Total labels in test:{}, +1 labels:{}, -1 label:{}".format(len(yTe),
-              np.count_nonzero(yTe[yTe > 0]), np.count_nonzero(yTe[yTe < 0])))
-        Model.model_accuracy(yTr, train_preds, yTe, test_preds, "knn", True)
-        return model_out
 
     @staticmethod
     def model_accuracy(yTr, train_preds, yTe, test_preds, model_type, print_on):

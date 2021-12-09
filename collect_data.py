@@ -15,11 +15,10 @@ file_name = "{}.csv".format(csv_file_name)
 
 ser = serial.Serial(arduino_port, baud)
 print("Connected to Arduino port:" + arduino_port)
-file = open(file_name, "a")
+file = open('./facial_classification/'+file_name, "a")
 print("Created file")
 ################################################################################
-samples, line = 10000, 0
-file = open(file_name, "a")
+samples, line = 5000, 0
 while line <= samples:
     getData = str(ser.readline())
     data = getData[0:][2:-4]+","+str(labels)

@@ -38,7 +38,7 @@ class Model:
         return model_out
 
     def create_svm_model(self):
-        model = svm.SVC(kernel="rbf")
+        model = svm.SVC(kernel="polynomial")
         xTr, xTe, yTr, yTe = train_test_split(
             self.X, self.Y, random_state=42, stratify=self.Y)
         model_out = model.fit(xTr, yTr)

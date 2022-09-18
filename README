@@ -23,3 +23,5 @@ In this file we train a classifier by instantiating a Model object with the csv 
 
 feedback_loop.py
 Feedback loop is the script we run to monitor mask wearing behavior. We use a sliding window of size 80 with 50% overlap. Every time the window has a size of 80, we use the unpickled model to make a prediction. This prediction is sent to the microprocessor, which emits a vibration if the mask wear is predicted as improper (label of +1). If the mask is predicted as properly worn (label of -1), there is no vibration. Additionally, if the model predicts properly worn, we use a separate, independent model to predict the facial expression of the user. The predictions are appropriately rendered in the GUI and displayed in the console. 
+
+<img src="4120 Poster.png"></img>
